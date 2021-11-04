@@ -77,14 +77,15 @@ export default class SoundCloudService {
             }
         });
 
-        const trackMediaData = res.data?.media?.transcodings;
-        if (!trackMediaData || trackMediaData.length == 0) {
+        const trackMediaData: any[] = res.data?.media?.transcodings;
+        const trackMediaMp3 = trackMediaData?.find(t => t.url.endsWith('progressive'));
+        if (!trackMediaMp3) {
             throw new Error('Unable to stream requested track');
         }
 
         const streamRes = await axios({
             method: 'get',
-            url: trackMediaData[0].url,
+            url: trackMediaMp3.url,
             headers: {
                 ...API_HEADERS,
                 'Authorization': this.buildOAuthToken(oauth)

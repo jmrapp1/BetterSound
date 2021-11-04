@@ -10,3 +10,21 @@ export function getMe(errorCallback) {
         });
     }
 }
+
+export function getHistory(errorCallback) {
+    return dispatch => {
+        return dispatchGetRequest('api/sc/history', history => {
+            dispatch(Reducer.setHistory(history.collection));
+        }, err => {
+            errorCallback(err);
+        });
+    }
+}
+
+export function getTrackStream(trackId, successCallback, errorCallback) {
+    return dispatchGetRequest('api/sc/stream?trackId=' + trackId, stream => {
+        successCallback(stream.url);
+    }, err => {
+        errorCallback(err);
+    });
+}
