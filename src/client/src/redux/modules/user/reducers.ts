@@ -1,4 +1,4 @@
-import {LOGIN, SET_USER} from './constants';
+import {LOGIN, LOGOUT, SET_USER} from './constants';
 
 const initialState = {
     user: {},
@@ -11,6 +11,10 @@ export const login = user => (
 
 export const setUser = user => (
     { type: SET_USER, user }
+);
+
+export const logout = () => (
+    { type: LOGOUT }
 );
 
 export default {
@@ -27,6 +31,11 @@ export default {
                 return {
                     ...state,
                     user: action.user
+                }
+            }
+            case LOGOUT: {
+                return {
+                    ...initialState
                 }
             }
             default:

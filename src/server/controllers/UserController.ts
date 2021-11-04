@@ -49,4 +49,10 @@ export default class UserController extends BaseController {
             err => this.handleServiceError(response, err)
         );
     }
+
+    @Get('/auth')
+    @UseBefore(AuthMiddleware)
+    auth(@Res() response: any) {
+        return response.status(200).json({});
+    }
 }

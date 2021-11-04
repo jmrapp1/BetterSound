@@ -8,7 +8,7 @@ const NavBar = props => (
         <Container>
             <Navbar.Brand href="#/user">BetterSound</Navbar.Brand>
             <Nav className="justify-content-end">
-                <Nav.Link href="#/user"></Nav.Link>
+                <Nav.Link href="#/explore">Explore</Nav.Link>
                 <Nav.Link href="#/user/settings">Settings</Nav.Link>
                 <Nav.Link href="#logout">Logout</Nav.Link>
             </Nav>
