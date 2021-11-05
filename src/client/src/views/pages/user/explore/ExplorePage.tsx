@@ -2,18 +2,19 @@ import * as React from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
 import {Actions as SoundCloudActions} from '../../../../redux/modules/soundcloud/';
+import {Actions as PlayerActions} from '../../../../redux/modules/player/';
 
 import './ExplorePage.scss'
 import TrackView from "../../../components/track/TrackView";
+import AudioPlayer from "../../../components/player/AudioPlayer";
 
-class ExplorePage extends React.Component<{ getHistory, loaded, me, trackHistory }, { audio }> {
+class ExplorePage extends React.Component<{ getHistory, loaded, me, trackHistory, setTrack }, { audio }> {
 
     constructor(props) {
         super(props);
         this.state = {
             audio: undefined
         }
-        this.playTrack = this.playTrack.bind(this);
         this.onPlay = this.onPlay.bind(this);
     }
 
@@ -29,20 +30,8 @@ class ExplorePage extends React.Component<{ getHistory, loaded, me, trackHistory
         }
     }
 
-    playTrack(url) {
-        if (this.state.audio) {
-            this.state.audio.pause();
-        }
-        console.log('Playing audio ' + url);
-        const audio = new Audio(url);
-        audio.play();
-        this.setState({audio});
-    }
-
-    onPlay(trackId: string) {
-        SoundCloudActions.getTrackStream(trackId, url => {
-            this.playTrack(url);
-        }, () => {});
+    onPlay(track) {
+        this.props.setTrack(track);
     }
 
     renderNotLoaded() {
@@ -53,17 +42,23 @@ class ExplorePage extends React.Component<{ getHistory, loaded, me, trackHistory
         )
     }
 
-    render() {
-        if (!this.props.loaded) {
-            return this.renderNotLoaded();
-        }
+    renderLoaded() {
         return (
-            <div id='explore-page'>
+            <div>
                 <h4>Hi {this.props.me.first_name}!</h4>
                 <hr />
                 {
                     this.props.trackHistory.map(h => <TrackView key={h.track.id} track={h.track} onPlay={this.onPlay} />)
                 }
+            </div>
+        )
+    }
+
+    render() {
+        return (
+            <div id='explore-page'>
+                <AudioPlayer />
+                { this.props.loaded ? this.renderLoaded() : this.renderNotLoaded() }
             </div>
         );
     }
@@ -76,6 +71,7 @@ export default connect(
         loaded: (state as any).sc.loaded
     }),
     dispatch => ({
-        getHistory: bindActionCreators(SoundCloudActions.getHistory, dispatch)
+        getHistory: bindActionCreators(SoundCloudActions.getHistory, dispatch),
+        setTrack: bindActionCreators(PlayerActions.setTrack, dispatch)
     })
 )(ExplorePage);

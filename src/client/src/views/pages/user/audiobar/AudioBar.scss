@@ -1,0 +1,19 @@
+#audio-bar {
+  color: white;
+  background-color: #212529;
+  padding: 15px 0;
+
+  #player-btns {
+    svg {
+      cursor: pointer;
+    }
+  }
+
+  .song-image {
+
+  }
+
+  p {
+    margin-bottom: 0 !important;
+  }
+}

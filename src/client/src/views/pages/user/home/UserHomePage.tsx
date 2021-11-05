@@ -10,6 +10,7 @@ import {Route, Switch} from "react-router";
 import SettingsPage from "../settings/SettingsPage";
 import {Container} from "react-bootstrap";
 import ExplorePage from "../explore/ExplorePage";
+import AudioBar from "../audiobar/AudioBar";
 
 class UserHomePage extends React.Component<{ me, getMe, logout, loggedIn, history, reduxStorageLoaded }> {
     constructor(props) {
@@ -43,15 +44,14 @@ class UserHomePage extends React.Component<{ me, getMe, logout, loggedIn, histor
     render() {
         return (
             <div id='user-home-page'>
-                <div>
-                    <NavBar/>
-                </div>
+                <NavBar/>
                 <Container id='user-home-content'>
                     <Switch>
                         <Route exact path='/user' component={ExplorePage}/>
                         <Route exact path='/user/settings' component={SettingsPage}/>
                     </Switch>
                 </Container>
+                <AudioBar />
             </div>
         );
     }

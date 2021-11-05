@@ -1,4 +1,27 @@
 
 .track-view {
+
+  .track-icon {
+    position: relative;
+    svg {
+      z-index: 2;
+      display: none
+    }
+  }
+
+  .track-icon:hover {
+    cursor: pointer;
+    img {
+      filter: hue-rotate(90deg) brightness(50%) grayscale(10%)
+    }
+    svg {
+      display: inline;
+      top: 50%;
+      left: 62%;
+      position: absolute;
+      transform: translate(-50%, -50%);
+    }
+  }
+
   margin-bottom: 40px;
 }
