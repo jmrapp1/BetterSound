@@ -8,14 +8,13 @@ import './ExplorePage.scss'
 import TrackView from "../../../components/track/TrackView";
 import AudioPlayer from "../../../components/player/AudioPlayer";
 
-class ExplorePage extends React.Component<{ getHistory, loaded, me, trackHistory, setTrack }, { audio }> {
+class ExplorePage extends React.Component<{ getHistory, loaded, me, trackHistory }, { audio }> {
 
     constructor(props) {
         super(props);
         this.state = {
             audio: undefined
         }
-        this.onPlay = this.onPlay.bind(this);
     }
 
     componentDidMount() {
@@ -28,10 +27,6 @@ class ExplorePage extends React.Component<{ getHistory, loaded, me, trackHistory
         if (this.props.loaded && !prevProps.loaded) {
             this.props.getHistory();
         }
-    }
-
-    onPlay(track) {
-        this.props.setTrack(track);
     }
 
     renderNotLoaded() {
@@ -47,9 +42,7 @@ class ExplorePage extends React.Component<{ getHistory, loaded, me, trackHistory
             <div>
                 <h4>Hi {this.props.me.first_name}!</h4>
                 <hr />
-                {
-                    this.props.trackHistory.map(h => <TrackView key={h.track.id} track={h.track} onPlay={this.onPlay} />)
-                }
+                {this.props.trackHistory.map(h => <TrackView key={h.track.id} track={h.track}/>)}
             </div>
         )
     }
@@ -71,7 +64,6 @@ export default connect(
         loaded: (state as any).sc.loaded
     }),
     dispatch => ({
-        getHistory: bindActionCreators(SoundCloudActions.getHistory, dispatch),
-        setTrack: bindActionCreators(PlayerActions.setTrack, dispatch)
+        getHistory: bindActionCreators(SoundCloudActions.getHistory, dispatch)
     })
 )(ExplorePage);
