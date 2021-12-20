@@ -2,5 +2,8 @@ export const SET_TRACK = 'PLAYER.SET_TRACK';
 export const PLAY = 'PLAYER.PLAY';
 export const PAUSE = 'PLAYER.PAUSE';
 export const RESET = 'PLAYER.RESET';
+export const SET_AUDIO = 'PLAYER.SET_AUDIO'
+export const SET_CURRENT_TIME = 'PLAYER.CURRENT_TIME';
+export const SET_DURATION = 'PLAYER.DURATION';
 
-export default { SET_TRACK, PLAY, PAUSE, RESET };
+export default { SET_TRACK, PLAY, PAUSE, RESET, SET_AUDIO, SET_CURRENT_TIME, SET_DURATION };

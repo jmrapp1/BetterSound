@@ -9,8 +9,15 @@
     }
   }
 
-  .song-image {
+  .vertical-range {
+    // transform: rotate(270deg);
+    // -moz-transform: rotate(270deg); /*do same for other browsers if required*/
+  }
 
+  .song-image {
+    img {
+      max-height: 50px !important;
+    }
   }
 
   p {

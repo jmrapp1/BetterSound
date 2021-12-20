@@ -1,9 +1,15 @@
-import {PAUSE, PLAY, RESET, SET_TRACK} from './constants';
+import {PAUSE, PLAY, RESET, SET_AUDIO, SET_CURRENT_TIME, SET_DURATION, SET_TRACK} from './constants';
 import {LOGOUT} from "../user/constants";
+import {formatTimeString} from "../../../utils/StringUtils";
 
 const initialState = {
     track: undefined,
-    playing: false
+    audio: undefined,
+    playing: false,
+    currentTime: 0,
+    currentTimeFormatted: '0:00',
+    duration: 0,
+    durationFormatted: ''
 };
 
 export const resetPlayer = () => (
@@ -12,6 +18,18 @@ export const resetPlayer = () => (
 
 export const setTrack = track => (
     { type: SET_TRACK, track }
+);
+
+export const setAudio = audio => (
+    { type: SET_AUDIO, audio }
+);
+
+export const setCurrentTime = currentTime => (
+    { type: SET_CURRENT_TIME, currentTime }
+);
+
+export const setDuration = duration => (
+    { type: SET_DURATION, duration }
 );
 
 export const playAudio = () => (
@@ -30,6 +48,29 @@ export default {
                     ...state,
                     track: action.track,
                     playing: true
+                }
+            }
+            case SET_AUDIO: {
+                if (!state.track) {
+                    return state;
+                }
+                return {
+                    ...state,
+                    audio: action.audio
+                }
+            }
+            case SET_CURRENT_TIME: {
+                return {
+                    ...state,
+                    currentTime: action.currentTime,
+                    currentTimeFormatted: formatTimeString(action.currentTime)
+                }
+            }
+            case SET_DURATION: {
+                return {
+                    ...state,
+                    duration: action.duration,
+                    durationFormatted: formatTimeString(action.duration)
                 }
             }
             case PLAY: {
