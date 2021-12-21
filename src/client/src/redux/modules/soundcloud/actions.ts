@@ -21,10 +21,12 @@ export function getHistory(errorCallback) {
     }
 }
 
-export function getTrackStream(trackId, successCallback, errorCallback) {
-    return dispatchGetRequest('api/sc/stream?trackId=' + trackId, stream => {
-        successCallback(stream.url);
-    }, err => {
-        errorCallback(err);
-    });
+export function getTrackStream(trackId): Promise<string> {
+    return new Promise((resolve, reject) => {
+        return dispatchGetRequest('api/sc/stream?trackId=' + trackId, stream => {
+            resolve(stream.url);
+        }, err => {
+            reject(err);
+        });
+    })
 }

@@ -10,18 +10,17 @@ import {faBackward, faForward, faPause, faPlay} from "@fortawesome/free-solid-sv
 import {triggerEventPlayPauseTrack, triggerEventSeekTrack, triggerEventTrackVolume} from "../../../../utils/Events";
 import {formatTimeString} from "../../../../utils/StringUtils";
 
-
-
-class AudioBar extends React.Component<{ playerState }, { isSeeking: boolean, seekValue: number }> {
+class AudioBar extends React.Component<{ playerState }, { isSeeking: boolean, seekValue: number}> {
 
     constructor(props) {
         super(props);
         this.state = {
             isSeeking: false,
             seekValue: 0
+
         }
         this.onPlayPressed = this.onPlayPressed.bind(this);
-        this.onSeekChanged = this.onSeekChanged.bind(this)
+        this.onSeekChanged = this.onSeekChanged.bind(this);
         this.onSeeking = this.onSeeking.bind(this);
     }
 

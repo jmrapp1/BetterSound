@@ -88,7 +88,7 @@ function getBodyByMethod(method, body) {
 }
 
 function headerOptions(otherHeaders: any = headers) {
-    const auth = localStorage.getItem('id_token');
+    const auth = getLocalStorageAuthToken();
     if (auth) {
         return {
             headers: {
@@ -100,8 +100,6 @@ function headerOptions(otherHeaders: any = headers) {
     return { headers: otherHeaders };
 }
 
-export default {
-    verifyStatus,
-    dispatchGetRequest,
-    dispatchPostRequest
-};
+export function getLocalStorageAuthToken() {
+    return localStorage.getItem('id_token');
+}

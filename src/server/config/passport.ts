@@ -1,5 +1,4 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import User from "../models/User";
 import UserService from "../services/UserService";
 import {Container} from "typedi";
 

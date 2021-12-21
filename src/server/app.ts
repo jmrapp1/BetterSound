@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import * as morgan from 'morgan';
 import * as passport from 'passport';
 import * as bodyParser from 'body-parser';
+const contentSecurityPolicy = require("helmet-csp");
 import 'reflect-metadata'; // required
 import './mixins/underscore';
 import registerPassport from './config/passport';
@@ -12,6 +13,7 @@ import {Container} from 'typedi';
 import DatabaseSetup from './util/DatabaseSetup';
 import UserController from './controllers/UserController';
 import SoundCloudController from "./controllers/SoundCloudController";
+import {startWebSocketServer} from "./websocket/WebSocketServer";
 
 useContainer(Container);
 
@@ -46,9 +48,19 @@ app.use(function (err, req, res, next) {
 (async () => {
     try {
         await new DatabaseSetup().setupDb();
-        app.listen(app.get('port'), () => {
+        const server = app.listen(app.get('port'), () => {
             console.log('Listening on port ' + app.get('port'));
         });
+
+        const wss = startWebSocketServer(server);
+
+        for (const exitCode of ['exit', 'SIGINT', 'SIGUSR1', 'SIGUSR2', 'uncaughtException']) {
+            process.on('SIGINT', function () {
+                server.close(async function () {
+                    await wss.destroyResources();
+                });
+            });
+        }
     } catch (e) {
         console.error('ERROR: Encountered critical error: ', e);
     }

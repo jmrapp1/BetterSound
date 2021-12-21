@@ -8,6 +8,7 @@ class HeaderMiddleware implements ExpressMiddlewareInterface {
         res.header('Access-Control-Allow-Origin', '*');
         res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
         res.header('Access-Control-Allow-Credentials', true);
+        res.header('Content-Security-Policy', 'connect-src self ws://*:* wss://192.168.1.158:* https: http:');
         next();
     }
 
