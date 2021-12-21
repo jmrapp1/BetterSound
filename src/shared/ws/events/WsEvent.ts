@@ -5,6 +5,7 @@ export abstract class WsEvent {
     type: string;
     sentAt: number;
     latency: number;
+    audioLatency: number;
     abstract payload: object;
 
     constructor(eventType) {

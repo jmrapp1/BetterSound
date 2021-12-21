@@ -46,8 +46,8 @@ export class ClientSocket {
     }
 
     sendEvent(event: WsEvent) {
-        console.log('Sending event' + JSON.stringify(event));
         event.sentAt = Date.now();
+        console.log('Sending event' + JSON.stringify(event));
         this.socket.send(JSON.stringify(event));
     }
 
@@ -66,7 +66,10 @@ export class ClientSocket {
             const parsedEvent = JSON.parse(msg.data);
             if (isValidWsEvent(parsedEvent)) {
                 parsedEvent.latency = Date.now() - parsedEvent.sentAt;
-                console.log(`Event ${parsedEvent.type} received. Latency of ${parsedEvent.latency}`);
+                parsedEvent.audioLatency = parsedEvent.latency > 0 // if devices are behind in time latency will be off
+                    ? parsedEvent.latency / 10000 // add latency to time
+                    : 0
+                console.log(`Event ${parsedEvent.type} received. Latency of ${parsedEvent.latency} ${parsedEvent.audioLatency}`);
                 if (this.customOnMessage) this.customOnMessage(parsedEvent);
             }
         } catch (e) {

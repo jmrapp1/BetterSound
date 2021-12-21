@@ -4,6 +4,8 @@ import {WsPlayNewTrackEvent} from "../../shared/ws/events/WsPlayNewTrackEvent";
 import {ServerEventEmitter} from "../event/ServerEventEmitter";
 import {WsEvent} from "../../shared/ws/events/WsEvent";
 import {WsCurrentTimeEvent} from "../../shared/ws/events/WsCurrentTimeEvent";
+import {WsPlayCurrentTrackEvent} from "../../shared/ws/events/WsPlayCurrentTrackEvent";
+import {WsPauseCurrentTrackEvent} from "../../shared/ws/events/WsPauseCurrentTrackEvent";
 
 export class UserSocket {
 
@@ -31,6 +33,8 @@ export class UserSocket {
 
         ServerEventEmitter.on(`${user._id}:${WsPlayNewTrackEvent.EVENT_TYPE}`, this.onPassThroughEvent);
         ServerEventEmitter.on(`${user._id}:${WsCurrentTimeEvent.EVENT_TYPE}`, this.onPassThroughEvent);
+        ServerEventEmitter.on(`${user._id}:${WsPlayCurrentTrackEvent.EVENT_TYPE}`, this.onPassThroughEvent);
+        ServerEventEmitter.on(`${user._id}:${WsPauseCurrentTrackEvent.EVENT_TYPE}`, this.onPassThroughEvent);
     }
 
     private onMessage(event: WsEvent) {

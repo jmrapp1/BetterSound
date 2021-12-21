@@ -17,7 +17,6 @@ function keepAliveCheck(wss) {
 
             ws.isAlive = false;
             ws.ping(() => {
-                console.log('Got ping');
                 ws.isAlive = true;
             })
         })

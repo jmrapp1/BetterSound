@@ -15,6 +15,8 @@ import {
 import {ClientSocket} from "../../../ws/ClientSocket";
 import {WsPlayNewTrackEvent} from "../../../../../shared/ws/events/WsPlayNewTrackEvent";
 import {WsCurrentTimeEvent} from "../../../../../shared/ws/events/WsCurrentTimeEvent";
+import {WsPlayCurrentTrackEvent} from "../../../../../shared/ws/events/WsPlayCurrentTrackEvent";
+import {WsPauseCurrentTrackEvent} from "../../../../../shared/ws/events/WsPauseCurrentTrackEvent";
 
 
 class AudioPlayer extends React.Component<{
@@ -23,7 +25,8 @@ class AudioPlayer extends React.Component<{
     setDuration, setCurrentTime
 }, {
     audio: HTMLAudioElement, volume: number, clientSocket: ClientSocket,
-    syncCount: number, owningPlayer: boolean, lastOwningSync: number }> {
+    syncCount: number, owningPlayer: boolean, lastOwningSync: number
+}> {
 
     constructor(props) {
         super(props);
@@ -85,9 +88,9 @@ class AudioPlayer extends React.Component<{
     disposeAudio() {
         if (this.state.audio) {
             this.state.audio.pause();
-            this.state.audio.remove();
             this.state.audio.removeEventListener('ended', this.onAudioEnded);
             this.state.audio.removeEventListener('timeupdate', this.onAudioTimeChange);
+            this.state.audio.remove();
         }
     }
 
@@ -99,13 +102,14 @@ class AudioPlayer extends React.Component<{
     async onWsEvent(event) {
         if (event.type === WsPlayNewTrackEvent.EVENT_TYPE) {
             await this.playNewTrack(event.payload.track, false, event.payload.url);
-        } else if (event.type === WsCurrentTimeEvent.EVENT_TYPE) {
-            if (this.state.audio) {
-                console.log(Math.abs(this.state.audio.currentTime - event.payload.currentTime));
-                // if (Math.abs(this.state.audio.currentTime - event.payload.currentTime) >= 0.65) {
-                    this.state.audio.currentTime = event.payload.currentTime + (event.latency / 10000); // add latency to time
-                // }
-            }
+        } else if (event.type === WsCurrentTimeEvent.EVENT_TYPE && this.state.audio) {
+            this.state.audio.currentTime = event.payload.currentTime + event.audioLatency;
+        } else if (event.type === WsPlayCurrentTrackEvent.EVENT_TYPE && this.state.audio) {
+            this.state.audio.currentTime = event.payload.currentTime + event.audioLatency;
+            await this.playTrack();
+        } else if (event.type === WsPauseCurrentTrackEvent.EVENT_TYPE && this.state.audio) {
+            this.pauseTrack();
+            this.state.audio.currentTime = event.payload.currentTime;
         }
     }
 
@@ -123,8 +127,8 @@ class AudioPlayer extends React.Component<{
                 if (this.state.owningPlayer) {
                     if (this.state.syncCount < 15) { // Initial sync after starting
                         this.state.clientSocket.sendEvent(new WsCurrentTimeEvent(this.state.audio.currentTime));
-                        this.setState({ syncCount: this.state.syncCount + 1});
-                    } else if (Date.now() - this.state.lastOwningSync >= 10000) { // Sync every 10 seconds
+                        this.setState({syncCount: this.state.syncCount + 1});
+                    } else if (Date.now() - this.state.lastOwningSync >= 5000) { // Sync every 10 seconds
                         this.state.clientSocket.sendEvent(new WsCurrentTimeEvent(this.state.audio.currentTime));
                         this.setState({
                             lastOwningSync: Date.now()
@@ -144,6 +148,7 @@ class AudioPlayer extends React.Component<{
 
     onTrackSeeked(e) {
         this.state.audio.currentTime = this.state.audio.duration * e.detail.time;
+        this.state.clientSocket.sendEvent(new WsCurrentTimeEvent(this.state.audio.currentTime));
     }
 
     onTrackVolume(e) {
@@ -159,8 +164,10 @@ class AudioPlayer extends React.Component<{
         }
         if (this.state.audio.paused) {
             await this.playTrack();
+            this.state.clientSocket.sendEvent(new WsPlayCurrentTrackEvent(this.state.audio.currentTime));
         } else {
             this.pauseTrack();
+            this.state.clientSocket.sendEvent(new WsPauseCurrentTrackEvent(this.state.audio.currentTime));
         }
     }
 
