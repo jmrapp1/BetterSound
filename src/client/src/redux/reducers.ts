@@ -3,11 +3,13 @@ import * as storage from 'redux-storage'
 import { Reducer as UserReducer } from './modules/user/';
 import { Reducer as SoundCloudReducer } from './modules/soundcloud/';
 import { Reducer as PlayerReducer } from './modules/player/';
+import { Reducer as WsReducer } from './modules/websocket/';
 import MainReducer from './modules/main/reducers';
 
 export default storage.reducer(combineReducers({
     ...UserReducer,
     ...MainReducer,
     ...SoundCloudReducer,
-    ...PlayerReducer
+    ...PlayerReducer,
+    ...WsReducer
 }));

@@ -7,11 +7,16 @@ import { Route, Switch } from 'react-router-dom';
 import LoginPage from './pages/login/LoginPage';
 import RegisterPage from './pages/register/RegisterPage';
 import UserHomePage from "./pages/user/home/UserHomePage";
+import {getDeviceId} from "../utils/Device";
 
 class App extends React.Component<{ history }> {
 
     constructor(props) {
         super(props);
+    }
+
+    componentDidMount() {
+        getDeviceId();
     }
 
     render() {

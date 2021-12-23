@@ -1,6 +1,9 @@
 import {isValidWsEvent} from "../../../shared/ws/WsEventManager";
 import {WsEvent} from "../../../shared/ws/events/WsEvent";
 import {getLocalStorageAuthToken} from "../redux/utils/fetchUtils";
+import {getDeviceCustomName, getDeviceId} from "../utils/Device";
+import * as ServerEventEmitter from "../../../server/event/ServerEventEmitter";
+import {WsDeviceConnectedEvent} from "../../../shared/ws/events/WsDeviceConnectedEvent";
 
 export class ClientSocketOptions {
     onOpen?: () => void;
@@ -32,7 +35,7 @@ export class ClientSocket {
     }
 
     connect() {
-        this.socket = new WebSocket("ws://192.168.1.158:3000/ws?auth=" + getLocalStorageAuthToken(), null);
+        this.socket = new WebSocket(`ws://192.168.1.158:3000/ws?auth=${getLocalStorageAuthToken()}&deviceId=${getDeviceId()}`);
         this.socket.onopen = this.onOpen;
         this.socket.onmessage = this.onMessage;
         this.socket.onclose = this.onClose;
@@ -47,12 +50,14 @@ export class ClientSocket {
 
     sendEvent(event: WsEvent) {
         event.sentAt = Date.now();
-        console.log('Sending event' + JSON.stringify(event));
+        console.log('Sending event ' + JSON.stringify(event));
         this.socket.send(JSON.stringify(event));
     }
 
     private onOpen() {
         console.log("Connected to websocket server");
+
+        this.sendEvent(new WsDeviceConnectedEvent(getDeviceId(), getDeviceCustomName()));
         if (this.customOnOpen) this.customOnOpen();
 
         this.timeout = 1000;
@@ -69,7 +74,7 @@ export class ClientSocket {
                 parsedEvent.audioLatency = parsedEvent.latency > 0 // if devices are behind in time latency will be off
                     ? parsedEvent.latency / 10000 // add latency to time
                     : 0
-                console.log(`Event ${parsedEvent.type} received. Latency of ${parsedEvent.latency} ${parsedEvent.audioLatency}`);
+                console.log(`Received Event ${parsedEvent.type} (${parsedEvent.latency}ms) ${JSON.stringify(parsedEvent)}`);
                 if (this.customOnMessage) this.customOnMessage(parsedEvent);
             }
         } catch (e) {

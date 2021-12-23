@@ -40,15 +40,15 @@ async function verifyJwt(token): Promise<{ validated: boolean, user?: object}>  
 }
 
 async function validateAuth(connectionParams): Promise<{ validated: boolean, user?: object}> {
-    if (connectionParams.auth?.startsWith('Bearer ')) {
+    if (connectionParams.deviceId && connectionParams.auth?.startsWith('Bearer ')) {
         return await verifyJwt(connectionParams.auth.substring(7));
     }
     console.log('Failed to auth user through ws');
     return { validated: false };
 }
 
-function createUserSocket(wss, socket, user) {
-    new UserSocket(socket, user);
+function createUserSocket(wss, socket, user, deviceId) {
+    new UserSocket(socket, user, deviceId);
 }
 
 export function startWebSocketServer(expressServer) {
@@ -65,7 +65,7 @@ export function startWebSocketServer(expressServer) {
         const authRes = await validateAuth(connectionParams);
         if (authRes.validated) {
             wss.handleUpgrade(request, socket, head, (websocket) => {
-                wss.emit("connection", websocket, request, authRes.user);
+                wss.emit("connection", websocket, request, authRes.user, connectionParams.deviceId);
             });
         } else {
             socket.write('HTTP/1.1 401 Web Socket Protocol Handshake\r\n' +
@@ -79,8 +79,8 @@ export function startWebSocketServer(expressServer) {
 
     wss.on(
         "connection",
-        function connection(webSocket, connectionRequest, user) {
-            createUserSocket(wss, webSocket, user);
+        function connection(webSocket, connectionRequest, user, deviceId) {
+            createUserSocket(wss, webSocket, user, deviceId);
         }
     );
 
